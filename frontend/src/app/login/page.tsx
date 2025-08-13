@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import useAuth from "@/hooks/useAuth";
+
 
 export default function LoginPage() {
   const router = useRouter();
