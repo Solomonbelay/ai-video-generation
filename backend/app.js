@@ -16,8 +16,10 @@ mongoose.connect(process.env.MONGO_URI, {})
   .catch(err => console.error('MongoDB connection error:', err));
 
 app.use(cors({
-  origin: 'http://localhost:3000',
-    origin: ['https://ai-beta-sooty.vercel.app'],
+  origin: [
+    'http://localhost:3000',            // frontend in development
+    'https://ai-beta-sooty.vercel.app' // frontend in production
+  ],
   credentials: true,
 }));
 
