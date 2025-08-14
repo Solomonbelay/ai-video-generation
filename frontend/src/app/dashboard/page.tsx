@@ -4,6 +4,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+
 
 export default function Dashboard() {
   const router = useRouter();
@@ -33,17 +36,22 @@ export default function Dashboard() {
 
   return (
     <main className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Welcome to your Dashboard</h1>
-      <p className="mb-4">Logged in as: <strong>{userEmail}</strong></p>
-      <button
-        onClick={() => {
-          Cookies.remove('token');
-          router.push('/login');
-        }}
-        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-      >
-        Logout
-      </button>
+     
+
+
+
+
+    <main className="min-h-screen bg-white">
+      <Navbar />
+      <Hero />
+      {/* Add more sections here if needed */}
+  
+    </main>
+
+
+
+
+      
     </main>
   );
 }

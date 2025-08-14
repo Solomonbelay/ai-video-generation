@@ -6,6 +6,7 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 
+const checkoutRoute= require ('./routes/checkoutRoute');
 const authRoutes = require('./routes/authRoutes');
 require('./config/passport');
 
@@ -40,7 +41,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use("/api", checkoutRoute);
 app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;

@@ -1,84 +1,120 @@
-"use client";
-import { useState } from "react";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-export default function LoginPage() {
+'use client';
+import { useState } from 'react';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export default function AuthPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isLogin, setIsLogin] = useState(true); // toggle between login/signup
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+   
+
+const url = `${API_URL}/api/auth/${isLogin ? 'login' : 'signup'}`;
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: isLogin ? 'include' : undefined,
         body: JSON.stringify({ email, password }),
       });
+
       const data = await res.json();
 
       if (res.ok) {
-        Cookies.set("token", data.token);
-        router.push("/dashboard");
+        if (isLogin) {
+          Cookies.set('token', data.token);
+          router.push('/dashboard');
+        } else {
+          alert('Registered successfully!');
+          setIsLogin(true); // switch to login after signup
+        }
       } else {
-        setError(data.message || "Login failed");
+        setError(data.message || (isLogin ? 'Login failed' : 'Signup failed'));
       }
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError('Something went wrong. Please try again.');
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = `${API_URL}/api/auth/google`;
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        {/* Toggle */}
+        <div className="flex justify-center mb-6 border-b border-gray-300">
+          <button
+            className={`px-4 py-2 font-semibold ${
+              isLogin ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'
+            }`}
+            onClick={() => setIsLogin(true)}
+          >
+            Sign In
+          </button>
+          <button
+            className={`px-4 py-2 font-semibold ${
+              !isLogin ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'
+            }`}
+            onClick={() => setIsLogin(false)}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {/* Heading */}
+        <h1 className="text-2xl font-bold text-center mb-6">
+          {isLogin ? 'Login' : 'Register'}
+        </h1>
+
+        {/* Error */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
-            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
             placeholder="Password"
-            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Login
+            {isLogin ? 'Login' : 'Sign Up'}
           </button>
         </form>
 
-        <div className="flex justify-between text-sm text-blue-600 mt-2">
-          <button
-            onClick={() => router.push("/forgot-password")}
-            className="hover:underline"
-          >
-            Forgot Password?
-          </button>
-          <button
-            onClick={() => router.push("/signup")}
-            className="hover:underline"
-          >
-            Sign Up
-          </button>
-        </div>
+        {/* Forgot Password only for login */}
+        {isLogin && (
+          <div className="text-right mt-2 text-sm">
+            <button
+              onClick={() => router.push('/forgot-password')}
+              className="text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
+        )}
 
+        {/* Continue with Google */}
         <div className="my-6 flex items-center">
           <hr className="flex-grow border-gray-300" />
           <span className="mx-3 text-gray-400">or</span>
