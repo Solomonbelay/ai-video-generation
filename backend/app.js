@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGO_URI, {})
 app.use(cors({
   origin: [
     'http://localhost:3000',            // frontend in development
-    'https://ai-video-generation-mu.vercel.app/' // frontend in production
+    'https://ai-video-generation-k9o2-git-main-solomon-belays-projects.vercel.app/' // frontend in production
   ],
   credentials: true,
 }));
@@ -38,6 +38,9 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000,
   },
 }));
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
 
 app.use(passport.initialize());
 app.use(passport.session());

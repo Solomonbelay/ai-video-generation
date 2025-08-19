@@ -53,7 +53,7 @@ export default function Hero() {
         });
       } else if (mode === 'image' && imageFile) {
         const formData = new FormData();
-        formData.append('image', imageFile as Blob); // <-- fix TypeScript error
+       formData.append('image', imageFile!);  // <-- fix TypeScript error
         formData.append('description', imageDescription);
         formData.append('duration', '10');
         formData.append('resolution', '720p');
