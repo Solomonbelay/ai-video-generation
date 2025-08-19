@@ -53,7 +53,7 @@ export default function Hero() {
         });
       } else if (mode === 'image' && imageFile) {
         const formData = new FormData();
-        formData.append('image', imageFile);
+        formData.append('image', imageFile as Blob); // <-- fix TypeScript error
         formData.append('description', imageDescription);
         formData.append('duration', '10');
         formData.append('resolution', '720p');
@@ -181,27 +181,25 @@ export default function Hero() {
         )}
 
         {/* Generated Video Preview */}
-        {/* Generated Video Preview */}
-{videoUrl && (
-  <div className="mt-10 text-center">
-    <h3 className="text-xl font-semibold mb-4">Your Generated Video:</h3>
-    <video
-      src={videoUrl}
-      controls
-      className="mx-auto rounded-lg shadow-lg max-w-full"
-    />
-    <div className="mt-4">
-      <a
-        href={videoUrl}
-        download="AI_Video.mp4"
-        className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-      >
-        Download Video
-      </a>
-    </div>
-  </div>
-)}
-
+        {videoUrl && (
+          <div className="mt-10 text-center">
+            <h3 className="text-xl font-semibold mb-4">Your Generated Video:</h3>
+            <video
+              src={videoUrl}
+              controls
+              className="mx-auto rounded-lg shadow-lg max-w-full"
+            />
+            <div className="mt-4">
+              <a
+                href={videoUrl}
+                download="AI_Video.mp4"
+                className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Download Video
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Example Videos Section */}
         <div className="mt-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
