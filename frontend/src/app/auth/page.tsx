@@ -14,6 +14,7 @@ export default function AuthPage() {
     e.preventDefault();
    
 
+
 const url = `${API_URL}/api/auth/${isLogin ? 'login' : 'signup'}`;
     try {
       const res = await fetch(url, {
