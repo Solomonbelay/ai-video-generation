@@ -6,16 +6,26 @@ const registerUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("➡️ Register attempt:", email); // trace incoming request
+
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'User already exists' });
+    if (userExists) {
+      console.warn("⚠️ User already exists:", email);
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
-    await User.create({ email, password: hashed });
+    const newUser = await User.create({ email, password: hashed });
+
+    console.log("✅ User registered:", newUser._id);
 
     res.status(201).json({ message: 'User registered' });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Registration error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -23,11 +33,19 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("➡️ Login attempt:", email);
+
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid email or password' });
+    if (!user) {
+      console.warn("⚠️ Login failed, user not found:", email);
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid email or password' });
+    if (!isMatch) {
+      console.warn("⚠️ Login failed, wrong password for:", email);
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
     const token = jwt.sign(
       { id: user._id, email: user.email },
@@ -35,12 +53,25 @@ const loginUser = async (req, res) => {
       { expiresIn: '1d' }
     );
 
-    res.json({ token, message: 'Login successful' });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    console.log("✅ Login successful for:", email);
+
+    res.json({ message: 'Login successful' });
+  } catch (error) {
+    console.error("❌ Login error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 const googleAuthCallback = (req, res) => {
   // On successful OAuth, create JWT and send to frontend in cookie or redirect with token
