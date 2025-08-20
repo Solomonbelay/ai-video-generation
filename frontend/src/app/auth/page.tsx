@@ -12,38 +12,39 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const [loadingButton, setLoadingButton] = useState(''); // '', 'login', 'signup', 'google'
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingButton(isLogin ? 'login' : 'signup');
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoadingButton(isLogin ? 'login' : 'signup');
 
-    const url = `${API_URL}/api/auth/${isLogin ? 'login' : 'signup'}`;
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: isLogin ? 'include' : undefined,
-        body: JSON.stringify({ email, password }),
-      });
+  const url = `${API_URL}/api/auth/${isLogin ? 'login' : 'signup'}`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // always include for both login & signup
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok) {
-        if (isLogin) {
-          Cookies.set('token', data.token);
-          router.push('/dashboard');
-        } else {
-          alert('Registered successfully!');
-          setIsLogin(true);
-        }
+    if (res.ok) {
+      if (isLogin) {
+        Cookies.set('token', data.token); // optional if backend sets cookie
+        router.push('/dashboard');
       } else {
-        setError(data.message || (isLogin ? 'Login failed' : 'Signup failed'));
+        alert('Registered successfully!');
+        setIsLogin(true);
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoadingButton('');
+    } else {
+      setError(data.message || (isLogin ? 'Login failed' : 'Signup failed'));
     }
-  };
+  } catch (err) {
+    setError('Something went wrong. Please try again.');
+  } finally {
+    setLoadingButton('');
+  }
+};
+
 
   const handleGoogleLogin = () => {
     setLoadingButton('google');
