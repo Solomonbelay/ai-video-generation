@@ -1,4 +1,5 @@
 "use client";
+//frontend/src/success/page.tsx
 import { useEffect, useState } from "react";
 
 export default function SuccessPage() {

@@ -1,6 +1,5 @@
 'use client';
 import { useState, ChangeEvent } from 'react';
-import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 
@@ -21,12 +20,6 @@ export default function Hero() {
   };
 
   const generateVideo = async () => {
-    const token = Cookies.get('token');
-    if (!token) {
-      alert('Please login first.');
-      router.push('/auth');
-      return;
-    }
 
     alert('Please pay first to generate video.');
     router.push('/payment');

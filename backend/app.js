@@ -6,7 +6,7 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 
-const checkoutRoute = require('./routes/checkoutRoute');
+const checkoutRoute = require('./routes/checkoutRoute'); // make sure the filename matches
 const authRoutes = require('./routes/authRoutes');
 require('./config/passport');
 
@@ -19,12 +19,12 @@ mongoose.connect(process.env.MONGO_URI, {})
 
 // ===== CORS =====
 const allowedOrigins = [
-  'http://localhost:3000',               // frontend in development
-  'https://ai-video-generation-mu.vercel.app' // frontend in production (no trailing slash)
+  'http://localhost:3000',
+  'https://ai-video-generation-ten.vercel.app'
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
+const corsOptions = {
+  origin: function(origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -32,7 +32,14 @@ app.use(cors({
     }
   },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// ✅ FIXED: use regex instead of '*' for preflight
+app.options(/.*/, cors(corsOptions));
 
 // ===== Middleware =====
 app.use(cookieParser());
@@ -63,8 +70,14 @@ app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     return res.status(403).json({ message: 'CORS Error: Access Denied' });
   }
-  next(err);
+  console.error('❌ Server error:', err);
+  res.status(500).json({ message: 'Server error', error: err.message });
 });
+
+// ===== Debug: list all registered routes =====
+const listEndpoints = require('express-list-endpoints');
+console.log("🔍 Registered routes:");
+console.log(listEndpoints(app));
 
 // ===== Start Server =====
 const PORT = process.env.PORT || 5000;

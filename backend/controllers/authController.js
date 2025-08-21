@@ -1,12 +1,13 @@
+// backend/controllers/authControll.js
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body; // include name
 
   try {
-    console.log("➡️ Register attempt:", email); // trace incoming request
+    console.log("➡️ Register attempt:", email);
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -15,7 +16,7 @@ const registerUser = async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ email, password: hashed });
+    const newUser = await User.create({ name, email, password: hashed }); // store name
 
     console.log("✅ User registered:", newUser._id);
 
@@ -72,9 +73,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 const googleAuthCallback = (req, res) => {
-  // On successful OAuth, create JWT and send to frontend in cookie or redirect with token
   const user = req.user;
   const token = jwt.sign(
     { id: user._id, email: user.email },
@@ -82,18 +81,34 @@ const googleAuthCallback = (req, res) => {
     { expiresIn: '1d' }
   );
 
-  // You can send the token in a cookie or redirect with token in URL (less secure)
   res.cookie('token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 24 * 60 * 60 * 1000,
   });
-res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard`);
 
+  res.redirect(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/dashboard`);
+};
+
+const getCurrentUser = async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(payload.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({ id: user._id, email: user.email, name: user.name }); // include name
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
 };
 
 module.exports = {
   registerUser,
   loginUser,
   googleAuthCallback,
+  getCurrentUser,
 };

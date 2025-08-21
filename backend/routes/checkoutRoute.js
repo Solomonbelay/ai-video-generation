@@ -1,4 +1,4 @@
-// routes/checkoutRoutes.js
+//backend/routes/checkoutRoute.js
 const express = require("express");
 const Stripe = require("stripe");
 const { createCheckoutSession } = require("../controllers/checkoutController.js");
