@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URI, {})
 // ===== CORS =====
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://ai-video-generation-ten.vercel.app'
+  'https://solaivideogen.vercel.app'
 ];
 
 const corsOptions = {
