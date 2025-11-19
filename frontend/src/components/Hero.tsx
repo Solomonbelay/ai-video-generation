@@ -195,23 +195,31 @@ export default function Hero() {
         )}
 
         {/* Example Videos Section */}
-        <div className="mt-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <img
-                src={`https://placeimg.com/640/360/tech?${i}`}
-                alt={`Example video ${i}`}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h4 className="font-semibold text-gray-800">Example Video {i}</h4>
-                <p className="text-gray-600 text-sm mt-1">
-                  See how AI can turn your ideas into videos instantly.
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+       <div className="mt-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {[
+    "https://www.youtube.com/embed/GYZJsM7sOKU",
+    "https://www.youtube.com/embed/nolS8hDocp4",
+    "https://www.youtube.com/embed/sPppjTWLsCY"
+  ].map((video, index) => (
+    <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <iframe
+        className="w-full h-48"
+        src={video}
+        title={`Video ${index + 1}`}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
+
+      <div className="p-4">
+        <h4 className="font-semibold text-gray-800">Video {index + 1}</h4>
+        <p className="text-gray-600 text-sm mt-1">
+          See how AI can turn your ideas into videos instantly.
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
       </section>
     </>
   );
