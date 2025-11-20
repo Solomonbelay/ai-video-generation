@@ -14,10 +14,44 @@ export default function Hero() {
   const [imageDescription, setImageDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) setImageFile(e.target.files[0]);
+
+
+
+const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setImageFile(file);
   };
+
+  // 🔥 Drag & Drop Handlers
+  const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = () => setDragActive(false);
+
+  const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) setImageFile(file);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const generateVideo = async () => {
 
@@ -70,6 +104,10 @@ export default function Hero() {
       setLoading(false);
     }
   };
+
+
+
+
 
   return (
     <>
@@ -128,17 +166,25 @@ export default function Hero() {
         )}
 
         {/* Image Input + Description */}
+ {/* IMAGE UPLOAD - Drag & Drop */}
         {mode === 'image' && (
           <div className="max-w-xl mx-auto mb-6 flex flex-col gap-4">
             <label
               htmlFor="imageUpload"
-              className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-blue-400"
+              className={`w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer transition 
+              ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400'}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
               {imageFile ? (
                 <p className="text-gray-700">{imageFile.name}</p>
               ) : (
-                <p className="text-gray-500">Click or drag an image to upload</p>
+                <p className="text-gray-500">
+                  Click or drag an image here to upload
+                </p>
               )}
+
               <input
                 id="imageUpload"
                 type="file"
@@ -147,6 +193,7 @@ export default function Hero() {
                 onChange={handleImageChange}
               />
             </label>
+
             <textarea
               className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               rows={3}
@@ -156,7 +203,6 @@ export default function Hero() {
             />
           </div>
         )}
-
         {/* Generate Button */}
         {mode && (
           <button
